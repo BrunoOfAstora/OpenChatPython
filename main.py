@@ -13,33 +13,36 @@ def main():
 def socketMain():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    server_ip = "127.0.0.1"
-    port = 8080
+    server_ip = input("Enter IP Address: ")
+    port = int(input("Enter Port: "))
 
-    server.bind((server_ip, port))
+    try:
+        server.bind((server_ip, port))
+    except OSError as e:
+        print(f"Erro ao vincular {server_ip}:{port} -> {e}")
+        exit()
 
-    server.listen(0)
-    print("Ouvindo " + server_ip + " na porta " + str(port))
+    server.listen(1)
+    print(f"Ouvindo {server_ip} na porta {port}")
 
     client_socket, client_address = server.accept()
-    print(f"Conexão de " + {client_address} + ":" + {client_socket} + " aceita." )
+    print(f"Conexão de {client_address} aceita.")
 
     while True:
-        request = client_socket.recv(1024)
-        request = request.decode("utf-8")
+        request = client_socket.recv(1024).decode("utf-8")
 
         if request.lower() == "close":
             client_socket.send("closed".encode("utf-8"))
             break
-    print(f"Recebido: " + {request})
 
-    response = "Accepted".encode("utf-8")
-    client_socket.send(response)
+        print(f"Recebido: {request}")
+        response = "Accepted".encode("utf-8")
+        client_socket.send(response)
 
     client_socket.close()
     print("Conexão fechada")
     server.close()
-    print(f"Servidor fechado")
+    print("Servidor fechado")
 
 if __name__ == "__main__":
     ip = main()
